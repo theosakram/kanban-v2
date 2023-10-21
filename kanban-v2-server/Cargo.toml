@@ -1,0 +1,23 @@
+[package]
+name = "kanban-v2-server"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+actix-web = "4.3.1"
+dotenv = "0.15.0"
+serde = "1.0.189"
+shuttle-actix-web = "0.29.0"
+shuttle-runtime = "0.29.0"
+shuttle-secrets = "0.29.0"
+shuttle-shared-db = { version = "0.29.0", features = ["postgres"] }
+sqlx = { version = "0.7.2", features = [
+    "runtime-tokio-native-tls",
+    "postgres",
+] }
+tokio = "1.26.0"
+uuid = { version = "1.5.0", features = [
+    "v4",                # Lets you generate random UUIDs
+    "fast-rng",          # Use a faster (but still sufficiently random) RNG
+    "macro-diagnostics", # Enable better diagnostics for compile-time UUIDs
+] }
