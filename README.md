@@ -11,6 +11,12 @@ This is a personal fullstack project
 - Shuttle
 - PostgreSQL
 
+### Features
+
+- Auth
+- CRUD
+- RBAC (Role-Based Access Control)
+
 ## 2. Frontend
 
 - Nexjs
