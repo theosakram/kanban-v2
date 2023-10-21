@@ -1,3 +1,4 @@
+mod rbac;
 mod tasks;
 
 use std::env;

@@ -1,10 +1,12 @@
 use actix_web::{
     error, get, post,
     web::{Data, Json},
-    Result,
+    Error, Result,
 };
 use serde::{Deserialize, Serialize};
 use sqlx::{FromRow, PgPool};
+
+use crate::rbac::{authorize, Role, User, UserAction};
 
 #[derive(Serialize, Deserialize, FromRow, Debug)]
 struct Task {
@@ -27,24 +29,44 @@ pub struct AppState {
 }
 
 #[get("")]
-async fn get_tasks(state: Data<AppState>) -> Result<Json<Vec<Task>>> {
-    let tasks = sqlx::query_as("SELECT * FROM tasks")
-        .fetch_all(&state.pool)
-        .await
-        .map_err(|e| error::ErrorBadRequest(e.to_string()))?;
+async fn get_tasks(state: Data<AppState>) -> Result<Json<Vec<Task>>, Error> {
+    let user = User {
+        username: "Hehe".to_string(),
+        role: Role::Collaborator,
+    };
 
-    return Ok(Json(tasks));
+    match authorize(&user, &UserAction::ReadTask) {
+        Ok(_) => {
+            let tasks = sqlx::query_as("SELECT * FROM tasks")
+                .fetch_all(&state.pool)
+                .await
+                .map_err(|e| error::ErrorBadRequest(e.to_string()))?;
+
+            return Ok(Json(tasks));
+        }
+        Err(e) => return Err(error::ErrorUnauthorized(e)),
+    }
 }
 
 #[post("")]
-async fn add_task(task: Json<TaskNew>, state: Data<AppState>) -> Result<Json<Task>> {
-    let task = sqlx::query_as("INSERT INTO tasks (serial, title, description) VALUES ($1, $2, $3) RETURNING id, serial, title, description")
-        .bind(&task.serial)
-        .bind(&task.title)
-        .bind(&task.description)
-        .fetch_one(&state.pool)
-        .await
-        .map_err(|e| error::ErrorBadRequest(e.to_string()))?;
+async fn add_task(task: Json<TaskNew>, state: Data<AppState>) -> Result<Json<Task>, Error> {
+    let user = User {
+        username: "Hehe".to_string(),
+        role: Role::Creator,
+    };
 
-    return Ok(Json(task));
+    match authorize(&user, &UserAction::CreateTask) {
+        Ok(_) => {
+            let task = sqlx::query_as("INSERT INTO tasks (serial, title, description) VALUES ($1, $2, $3) RETURNING id, serial, title, description")
+            .bind(&task.serial)
+            .bind(&task.title)
+            .bind(&task.description)
+            .fetch_one(&state.pool)
+            .await
+            .map_err(|e| error::ErrorBadRequest(e.to_string()))?;
+
+            return Ok(Json(task));
+        }
+        Err(e) => return Err(error::ErrorUnauthorized(e)),
+    }
 }
