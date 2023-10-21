@@ -1,4 +1,4 @@
-# kanban-v2
+# kanban-v2 (WORK IN PROGRESS)
 
 This is a personal fullstack project
 
