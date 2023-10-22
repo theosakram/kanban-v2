@@ -1,6 +1,8 @@
 mod auth;
+mod boards;
 mod helper;
 mod rbac;
+mod task_columns;
 mod tasks;
 
 use std::env;
@@ -9,11 +11,13 @@ use actix_web::middleware::Logger;
 use actix_web::web;
 use actix_web::{get, web::ServiceConfig};
 use auth::{login, register};
+use boards::get_boards_by_user_id;
 use dotenv::dotenv;
 use shuttle_actix_web::ShuttleActixWeb;
 use shuttle_runtime::CustomError;
 use sqlx::{Executor, PgPool};
-use tasks::{add_task, get_tasks, AppState};
+use task_columns::get_columns_by_board_id;
+use tasks::{add_task, get_tasks_by_columns_id, AppState};
 
 #[get("/")]
 async fn hello_world() -> &'static str {
@@ -43,18 +47,28 @@ async fn main(
     let config = move |cfg: &mut ServiceConfig| {
         cfg.service(hello_world)
             .service(
+                web::scope("/boards")
+                    .wrap(Logger::default())
+                    .service(get_boards_by_user_id),
+            )
+            .service(
+                web::scope("/columns")
+                    .wrap(Logger::default())
+                    .service(get_columns_by_board_id),
+            )
+            .service(
                 web::scope("/tasks")
                     .wrap(Logger::default())
-                    .service(get_tasks)
-                    .service(add_task)
-                    .app_data(state),
+                    .service(get_tasks_by_columns_id)
+                    .service(add_task),
             )
             .service(
                 web::scope("/auth")
                     .wrap(Logger::default())
                     .service(login)
                     .service(register),
-            );
+            )
+            .app_data(state);
     };
 
     Ok(config.into())
