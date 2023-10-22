@@ -9,7 +9,7 @@ This is a personal fullstack project
 - Rust
 - Actix Web
 - Shuttle
-- PostgreSQL
+- PostgreSQL (No ORM)
 
 ### Features
 
@@ -21,3 +21,8 @@ This is a personal fullstack project
 
 - Nexjs
 - Typescript
+
+### Feature
+
+- Drag n Drop
+- RBAC (Role-Based Access Control)
