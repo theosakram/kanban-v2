@@ -11,7 +11,7 @@ This is a personal fullstack project
 - Shuttle
 - PostgreSQL (No ORM)
 
-### Features
+### BE Features
 
 - Auth
 - CRUD
@@ -22,7 +22,20 @@ This is a personal fullstack project
 - Nexjs
 - Typescript
 
-### Feature
+### FE Features
 
 - Drag n Drop
 - RBAC (Role-Based Access Control)
+- Client side cache
+
+## 3. Caching
+
+Cached with actix-cache
+
+## Deployment
+
+Live demo can be found here
+
+- DB deployed on Heroku
+- Backend deployed on Shuttle
+- Frontend deployed on Vercel
